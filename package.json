@@ -1,0 +1,23 @@
+{
+  "name": "gif-lab",
+  "version": "1.0.0",
+  "description": "GIF Lab - In-browser GIF search, editor, and handcrafted GIF encoder",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "gif",
+    "editor",
+    "giphy",
+    "lzw",
+    "median-cut"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

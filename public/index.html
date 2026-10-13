@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIF Lab — Whole GIF Editor & Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Impact&family=Montserrat:wght@700;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #090b10;
+      --bg-card: #121622;
+      --bg-surface: #181d2c;
+      --bg-hover: #22283c;
+      --border: #262e45;
+      --border-focus: #6366f1;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --accent: #06b6d4;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+    }
+    .btn-primary:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+    }
+    .btn-secondary:hover {
+      background: var(--bg-hover);
+      border-color: #3b4566;
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-icon:hover {
+      color: var(--text);
+      background: var(--bg-hover);
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: rgba(18, 22, 34, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .logo-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: -0.5px;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+    }
+
+    .logo-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      max-width: 580px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 10px 16px 10px 42px;
+      border-radius: 100px;
+      color: var(--text);
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      background: #1c2234;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      pointer-events: none;
+    }
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      padding: 4px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #fileUploadInput {
+      display: none;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1440px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 1. HOME SCREEN */
+    #homeScreen {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .home-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .banner-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .quick-tags {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .quick-tags::-webkit-scrollbar {
+      display: none;
+    }
+    .tag-chip {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .tag-chip:hover, .tag-chip.active {
+      background: var(--bg-hover);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .gif-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 14px;
+      width: 100%;
+    }
+
+    .gif-card {
+      position: relative;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      aspect-ratio: 1 / 1;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .gif-card:hover {
+      transform: translateY(-3px) scale(1.015);
+      border-color: var(--primary);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+    }
+    .gif-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .gif-card:hover img {
+      transform: scale(1.05);
+    }
+    .gif-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(9, 11, 16, 0.9) 0%, rgba(9, 11, 16, 0) 50%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 10px;
+    }
+    .gif-card:hover .gif-overlay {
+      opacity: 1;
+    }
+    .gif-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .gif-badge {
+      align-self: flex-start;
+      margin-top: 4px;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: var(--primary);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .load-more-container {
+      display: flex;
+      justify-content: center;
+      margin: 24px 0 40px;
+    }
+
+    /* 2. WHOLE GIF EDITOR SCREEN */
+    #editorScreen {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+    }
+
+    .editor-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .editor-file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .meta-tag {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 100px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .editor-workspace {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .editor-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Canvas Panel */
+    .canvas-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      max-width: 100%;
+      min-height: 320px;
+      max-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: 
+        linear-gradient(45deg, #151824 25%, transparent 25%), 
+        linear-gradient(-45deg, #151824 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #151824 75%), 
+        linear-gradient(-45deg, transparent 75%, #151824 75%);
+      background-size: 16px 16px;
+      cursor: crosshair;
+    }
+
+    #previewCanvas {
+      display: block;
+      max-width: 100%;
+      max-height: 520px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    /* Interactive Timeline & Player Controls */
+    .timeline-container {
+      width: 100%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .time-display {
+      font-variant-numeric: tabular-nums;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      min-width: 110px;
+      text-align: center;
+    }
+
+    /* Tabs for Sidebar Editing */
+    .tabs-nav {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-surface);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .tab-btn:hover {
+      color: #fff;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Controls Sidebar */
+    .controls-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+    }
+    .controls-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    .controls-panel::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .tab-content {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .tab-content.active {
+      display: flex;
+    }
+
+    .section-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.75px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-group {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.84rem;
+    }
+
+    .control-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .control-value {
+      font-weight: 600;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.8rem;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #232a3d;
+      border-radius: 4px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(99, 102, 241, 0.6);
+      transition: transform 0.1s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .pill-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-base);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+    .pill-btn {
+      flex: 1;
+      padding: 5px 8px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .pill-btn:hover {
+      color: #fff;
+    }
+    .pill-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .text-input-field {
+      width: 100%;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 0.85rem;
+      transition: border-color 0.15s;
+    }
+    .text-input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .select-field {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      color: #fff;
+      font-size: 0.82rem;
+      outline: none;
+    }
+
+    .switch-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .toggle-checkbox {
+      appearance: none;
+      width: 36px;
+      height: 20px;
+      background: #232a3d;
+      border-radius: 20px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-checkbox::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      top: 3px;
+      left: 3px;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+    .toggle-checkbox:checked {
+      background: var(--primary);
+    }
+    .toggle-checkbox:checked::before {
+      transform: translateX(16px);
+    }
+
+    /* Text Layer Item Card */
+    .text-layer-card {
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .text-layer-card.active-layer {
+      border-color: var(--primary);
+      box-shadow: 0 0 8px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Modal Dialogs */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 10px;
+      background: var(--bg-surface);
+      border-radius: 100px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #06b6d4);
+      transition: width 0.15s ease;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+      font-size: 0.88rem;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="logo-container" id="btnLogoHome">
+      <div class="logo-badge">GIF</div>
+      <div class="logo-title">GIF Lab</div>
+    </div>
+
+    <div class="search-wrapper" id="headerSearchWrapper">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search GIFs on GIPHY..." autocomplete="off">
+      <button id="searchClearBtn" class="search-clear">✕</button>
+    </div>
+
+    <div class="nav-actions">
+      <button id="btnUploadTrigger" class="btn-secondary" title="Upload GIF or Video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Upload GIF</span>
+      </button>
+      <input type="file" id="fileUploadInput" accept=".gif,video/mp4,video/webm">
+    </div>
+  </header>
+
+  <main>
+    <!-- 1. HOME SCREEN: GIF SEARCH & TRENDING -->
+    <section id="homeScreen">
+      <div class="home-banner">
+        <h2 class="banner-title" id="bannerTitle">
+          <span id="bannerTitleIcon">🔥</span>
+          <span id="bannerTitleText">Trending GIFs</span>
+        </h2>
+        <div class="quick-tags" id="quickTags">
+          <button class="tag-chip active" data-query="">Trending</button>
+          <button class="tag-chip" data-query="cat">Cats 🐱</button>
+          <button class="tag-chip" data-query="reaction">Reactions</button>
+          <button class="tag-chip" data-query="anime">Anime</button>
+          <button class="tag-chip" data-query="dance">Dance</button>
+          <button class="tag-chip" data-query="meme">Memes</button>
+          <button class="tag-chip" data-query="gaming">Gaming</button>
+          <button class="tag-chip" data-query="mind blown">Mind Blown</button>
+        </div>
+      </div>
+
+      <div id="noticeBanner" style="display:none; background:rgba(99,102,241,0.1); border:1px solid rgba(99,102,241,0.3); border-radius:8px; padding:10px 14px; font-size:0.85rem; color:#a5b4fc;">
+      </div>
+
+      <div class="gif-grid" id="gifGrid"></div>
+
+      <div class="load-more-container" id="loadMoreContainer">
+        <button id="btnLoadMore" class="btn-secondary" style="padding:10px 24px;">
+          <span>Load More GIFs</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. WHOLE GIF EDITOR SCREEN -->
+    <section id="editorScreen">
+      <div class="editor-top-bar">
+        <div class="editor-file-info">
+          <button id="btnStartOver" class="btn-secondary" style="padding:6px 12px; font-size:0.82rem;">
+            ← Start Over
+          </button>
+          <div style="display:flex; flex-direction:column; gap:2px;">
+            <span id="editorFilename" style="font-weight:700; font-size:0.95rem;">Editing GIF</span>
+            <div style="display:flex; gap:6px;">
+              <span class="meta-tag" id="metaDimensions">0 × 0 px</span>
+              <span class="meta-tag" id="metaFrameCount">0 Frames</span>
+              <span class="meta-tag" id="metaDuration">0.0s</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button id="btnExportGif" class="btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export Edited GIF</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Editor Workspace -->
+      <div class="editor-workspace">
+        <!-- Left: Live Animated Preview Canvas -->
+        <div class="canvas-panel">
+          <div class="canvas-wrapper" id="canvasContainer">
+            <canvas id="previewCanvas"></canvas>
+          </div>
+
+          <!-- Timeline & Playback Bar -->
+          <div class="timeline-container">
+            <div class="timeline-header">
+              <span>Whole GIF Timeline & Playback</span>
+              <span class="time-display" id="timeDisplay">0.0s / 0.0s</span>
+            </div>
+
+            <div class="player-controls">
+              <button id="btnStepBack" class="btn-icon" title="Step Back">⏮</button>
+              <button id="btnPlayPause" class="btn-primary" style="border-radius:50%; width:42px; height:42px; padding:0;" title="Play / Pause">
+                ▶
+              </button>
+              <button id="btnStepForward" class="btn-icon" title="Step Forward">⏭</button>
+            </div>
+
+            <!-- Trim Start & End Sliders -->
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div class="control-row">
+                <span class="control-label" style="font-size:0.78rem;">Trim Start Time</span>
+                <span class="control-value" id="valTrimStart">0.0s</span>
+              </div>
+              <input type="range" id="inputTrimStart" min="0" max="100" value="0">
+
+              <div class="control-row">
+                <span class="control-label" style="font-size:0.78rem;">Trim End Time</span>
+                <span class="control-value" id="valTrimEnd">0.0s</span>
+              </div>
+              <input type="range" id="inputTrimEnd" min="0" max="100" value="100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Tabbed Whole-GIF Editing Tools -->
+        <div class="controls-panel">
+          <!-- Navigation Tabs -->
+          <div class="tabs-nav">
+            <button class="tab-btn active" data-tab="tabText">✍️ Text Overlay</button>
+            <button class="tab-btn" data-tab="tabTiming">⚡ Timing & Motion</button>
+            <button class="tab-btn" data-tab="tabTransform">📐 Crop & Size</button>
+            <button class="tab-btn" data-tab="tabFilters">🎨 Color & FX</button>
+            <button class="tab-btn" data-tab="tabOverlays">🖼️ Frame & Border</button>
+          </div>
+
+          <!-- TAB 1: TEXT OVERLAY -->
+          <div class="tab-content active" id="tabText">
+            <div class="section-title">
+              <span>Text Layers On GIF</span>
+              <button id="btnAddTextLayer" class="btn-secondary" style="font-size:0.72rem; padding:3px 8px;">+ Add Text</button>
+            </div>
+
+            <div id="textLayersList" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+            <!-- Active Text Controls -->
+            <div class="control-group" id="activeTextGroup">
+              <div class="control-row">
+                <span class="control-label" style="font-weight:700;">Edit Selected Text</span>
+                <button id="btnDeleteTextLayer" style="background:none; border:none; color:var(--danger); font-size:0.75rem; cursor:pointer;">Delete</button>
+              </div>
+
+              <input type="text" id="inputTextString" class="text-input-field" placeholder="Type text here...">
+
+              <div class="control-row">
+                <span class="control-label">Quick Position</span>
+                <div class="pill-group" id="textPosGroup">
+                  <button class="pill-btn" data-pos="top">Top</button>
+                  <button class="pill-btn" data-pos="center">Center</button>
+                  <button class="pill-btn active" data-pos="bottom">Bottom</button>
+                </div>
+              </div>
+
+              <!-- Vertical and Horizontal Alignment / Drag -->
+              <div class="control-row">
+                <span class="control-label">Y Position</span>
+                <span class="control-value" id="valTextPosY">85%</span>
+              </div>
+              <input type="range" id="inputTextPosY" min="5" max="95" value="85">
+
+              <div class="control-row">
+                <span class="control-label">Font Family</span>
+                <select id="selectFontFamily" class="select-field" style="width:140px;">
+                  <option value="Impact">Impact (Meme)</option>
+                  <option value="'Montserrat', sans-serif">Montserrat</option>
+                  <option value="'Space Mono', monospace">Monospace</option>
+                  <option value="system-ui, sans-serif">Modern Sans</option>
+                  <option value="Georgia, serif">Classic Serif</option>
+                </select>
+              </div>
+
+              <div class="control-row">
+                <span class="control-label">Font Size</span>
+                <span class="control-value" id="valTextFontSize">36 px</span>
+              </div>
+              <input type="range" id="inputTextFontSize" min="16" max="96" value="36">
+
+              <div class="control-row">
+                <span class="control-label">Text Color</span>
+                <input type="color" id="inputTextColor" value="#ffffff" style="background:none; border:none; cursor:pointer; width:34px; height:24px;">
+              </div>
+
+              <div class="control-row">
+                <span class="control-label">Outline Color</span>
+                <input type="color" id="inputTextStrokeColor" value="#000000" style="background:none; border:none; cursor:pointer; width:34px; height:24px;">
+              </div>
+
+              <div class="control-row">
+                <span class="control-label">Outline Thickness</span>
+                <span class="control-value" id="valTextStrokeWidth">4 px</span>
+              </div>
+              <input type="range" id="inputTextStrokeWidth" min="0" max="16" value="4">
+
+              <div class="control-row">
+                <span class="control-label">Background Banner / Box</span>
+                <select id="selectTextBg" class="select-field" style="width:150px;">
+                  <option value="none">None (Transparent)</option>
+                  <option value="black-bar">Black Banner Bar</option>
+                  <option value="translucent-pill">Translucent Pill</option>
+                  <option value="white-box">White Box (Subtitle)</option>
+                </select>
+              </div>
+
+              <label class="switch-row">
+                <span>Uppercase Text</span>
+                <input type="checkbox" id="checkUppercase" class="toggle-checkbox" checked>
+              </label>
+            </div>
+          </div>
+
+          <!-- TAB 2: TIMING & MOTION -->
+          <div class="tab-content" id="tabTiming">
+            <div class="section-title">Speed & Playback Motion</div>
+            <div class="control-group">
+              <div class="control-row">
+                <span class="control-label">Whole GIF Speed</span>
+                <span class="control-value" id="valSpeed">1.0x</span>
+              </div>
+              <input type="range" id="inputSpeed" min="0.25" max="4.0" step="0.25" value="1.0">
+              <div class="pill-group">
+                <button class="pill-btn" data-speed="0.5">0.5x</button>
+                <button class="pill-btn active" data-speed="1.0">1.0x</button>
+                <button class="pill-btn" data-speed="1.5">1.5x</button>
+                <button class="pill-btn" data-speed="2.0">2.0x</button>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
+                <label class="switch-row">
+                  <div>
+                    <div style="font-weight:600;">Reverse GIF Direction</div>
+                    <div style="font-size:0.72rem; color:var(--text-dim);">Plays animation from end to start</div>
+                  </div>
+                  <input type="checkbox" id="checkReverse" class="toggle-checkbox">
+                </label>
+
+                <label class="switch-row">
+                  <div>
+                    <div style="font-weight:600;">Boomerang (Ping-Pong)</div>
+                    <div style="font-size:0.72rem; color:var(--text-dim);">Smooth forward & backward loop</div>
+                  </div>
+                  <input type="checkbox" id="checkBoomerang" class="toggle-checkbox">
+                </label>
+
+                <label class="switch-row">
+                  <div>
+                    <div style="font-weight:600;">Play Once</div>
+                    <div style="font-size:0.72rem; color:var(--text-dim);">Do not repeat infinitely</div>
+                  </div>
+                  <input type="checkbox" id="checkPlayOnce" class="toggle-checkbox">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: CROP & TRANSFORM -->
+          <div class="tab-content" id="tabTransform">
+            <div class="section-title">Aspect Ratio & Resizing</div>
+            <div class="control-group">
+              <div class="control-row">
+                <span class="control-label">Crop Aspect Ratio</span>
+              </div>
+              <div class="pill-group" id="cropAspectGroup">
+                <button class="pill-btn active" data-aspect="original">Original</button>
+                <button class="pill-btn" data-aspect="1:1">1:1 Square</button>
+                <button class="pill-btn" data-aspect="9:16">9:16 Story</button>
+                <button class="pill-btn" data-aspect="16:9">16:9 Wide</button>
+                <button class="pill-btn" data-aspect="4:5">4:5 Feed</button>
+              </div>
+
+              <div class="control-row" style="margin-top:6px;">
+                <span class="control-label">Export Width</span>
+                <span class="control-value" id="valWidth">320 px</span>
+              </div>
+              <input type="range" id="inputWidth" min="100" max="640" value="320">
+
+              <div class="section-title" style="margin-top:8px;">Rotate & Flip</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button id="btnRotateCw" class="btn-secondary" style="font-size:0.78rem;">↻ Rotate 90°</button>
+                <button id="btnResetTransform" class="btn-secondary" style="font-size:0.78rem;">↺ Reset</button>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button id="btnFlipH" class="btn-secondary" style="font-size:0.78rem;">⇄ Flip Horiz</button>
+                <button id="btnFlipV" class="btn-secondary" style="font-size:0.78rem;">⇅ Flip Vert</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 4: COLOR & FX -->
+          <div class="tab-content" id="tabFilters">
+            <div class="section-title">
+              <span>Whole GIF Color Filters</span>
+              <button id="btnResetFilters" style="background:none; border:none; color:var(--primary); font-size:0.75rem; cursor:pointer;">Reset</button>
+            </div>
+            <div class="control-group">
+              <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:6px;">
+                <button id="btnFilterBw" class="btn-secondary" style="font-size:0.75rem; padding:6px 4px;">Grayscale</button>
+                <button id="btnFilterSepia" class="btn-secondary" style="font-size:0.75rem; padding:6px 4px;">Sepia</button>
+                <button id="btnFilterInvert" class="btn-secondary" style="font-size:0.75rem; padding:6px 4px;">Invert</button>
+              </div>
+
+              <div class="control-row" style="margin-top:4px;">
+                <span class="control-label">Brightness</span>
+                <span class="control-value" id="valBrightness">0%</span>
+              </div>
+              <input type="range" id="inputBrightness" min="-100" max="100" value="0">
+
+              <div class="control-row">
+                <span class="control-label">Contrast</span>
+                <span class="control-value" id="valContrast">0%</span>
+              </div>
+              <input type="range" id="inputContrast" min="-100" max="100" value="0">
+
+              <div class="control-row">
+                <span class="control-label">Saturation</span>
+                <span class="control-value" id="valSaturation">0%</span>
+              </div>
+              <input type="range" id="inputSaturation" min="-100" max="100" value="0">
+
+              <div class="control-row">
+                <span class="control-label">Pixelate (Retro 8-bit)</span>
+                <span class="control-value" id="valPixelate">1 (Off)</span>
+              </div>
+              <input type="range" id="inputPixelate" min="1" max="20" value="1">
+            </div>
+          </div>
+
+          <!-- TAB 5: FRAME & BORDER & WATERMARK -->
+          <div class="tab-content" id="tabOverlays">
+            <div class="section-title">Border & Canvas Framing</div>
+            <div class="control-group">
+              <div class="control-row">
+                <span class="control-label">Border Width</span>
+                <span class="control-value" id="valBorderWidth">0 px</span>
+              </div>
+              <input type="range" id="inputBorderWidth" min="0" max="24" value="0">
+
+              <div class="control-row">
+                <span class="control-label">Border Color</span>
+                <input type="color" id="inputBorderColor" value="#ffffff" style="background:none; border:none; cursor:pointer; width:34px; height:24px;">
+              </div>
+
+              <label class="switch-row" style="margin-top:6px;">
+                <div>
+                  <div style="font-weight:600;">Vignette Shadow</div>
+                  <div style="font-size:0.72rem; color:var(--text-dim);">Dark cinematic edge shading</div>
+                </div>
+                <input type="checkbox" id="checkVignette" class="toggle-checkbox">
+              </label>
+
+              <!-- Watermark -->
+              <div class="section-title" style="margin-top:10px;">Watermark / Badge</div>
+              <input type="text" id="inputWatermark" class="text-input-field" placeholder="e.g. @giflab or 🔥">
+
+              <div class="control-row">
+                <span class="control-label">Watermark Position</span>
+                <select id="selectWatermarkPos" class="select-field">
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                </select>
+              </div>
+
+              <!-- Dithering option -->
+              <label class="switch-row" style="margin-top:8px;">
+                <div>
+                  <div style="font-weight:600;">Floyd-Steinberg Dithering</div>
+                  <div style="font-size:0.72rem; color:var(--text-dim);">High quality gradient smoothing</div>
+                </div>
+                <input type="checkbox" id="checkDithering" class="toggle-checkbox" checked>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Export Progress & Result Modal -->
+  <div class="modal-backdrop" id="exportModal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span id="exportModalTitle">Exporting GIF</span>
+        <button class="btn-icon" id="btnCloseExportModal" style="border:none;">✕</button>
+      </div>
+
+      <div id="exportProgressSection" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="font-size:0.85rem; color:var(--text-muted);" id="exportStatusText">
+          Quantizing colors with Median-Cut algorithm...
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="exportProgressBar"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-dim);">
+          <span id="exportProgressDetail">Frame 0 / 0</span>
+          <span id="exportProgressPercent">0%</span>
+        </div>
+      </div>
+
+      <div id="exportResultSection" style="display:none; flex-direction:column; align-items:center; gap:16px;">
+        <div style="max-height:260px; max-width:100%; border-radius:8px; overflow:hidden; background:#000; border:1px solid var(--border);">
+          <img id="exportResultImg" style="max-height:260px; max-width:100%; object-fit:contain; display:block;" alt="Exported GIF">
+        </div>
+        <div style="display:flex; gap:12px; font-size:0.8rem; color:var(--text-muted);">
+          <span class="meta-tag" id="exportResultSize">0 KB</span>
+          <span class="meta-tag" id="exportResultDims">0 × 0</span>
+        </div>
+        <a id="btnSaveGifLink" class="btn-primary" style="text-decoration:none; width:100%;" download="giflab_animation.gif">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Save GIF</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">
+    <span id="toastMsg">Notification</span>
+  </div>
+
+  <script>
+  (function () {
+    'use strict';
+
+    // ========================================================
+    // APP STATE
+    // ========================================================
+    const state = {
+      screen: 'home',
+      query: '',
+      offset: 0,
+      limit: 24,
+      isLoadingGifs: false,
+      hasMoreGifs: true,
+
+      // Whole GIF data
+      frames: [],
+      originalWidth: 0,
+      originalHeight: 0,
+      totalDurationMs: 0,
+
+      // Playback
+      isPlaying: true,
+      currentFrameIndex: 0,
+      lastFrameTimestamp: 0,
+      boomerangForward: true,
+
+      // Text Layers: Array of { id, text, posY, font, size, color, strokeColor, strokeWidth, bgStyle, uppercase }
+      textLayers: [
+        {
+          id: 1,
+          text: 'GIF LAB',
+          posY: 85, // percentage
+          font: 'Impact',
+          size: 38,
+          color: '#ffffff',
+          strokeColor: '#000000',
+          strokeWidth: 4,
+          bgStyle: 'none',
+          uppercase: true
+        }
+      ],
+      activeTextLayerId: 1,
+
+      // Whole GIF Settings
+      editor: {
+        speed: 1.0,
+        trimStartPct: 0,
+        trimEndPct: 100,
+        reverse: false,
+        boomerang: false,
+        playOnce: false,
+
+        aspectRatio: 'original', // 'original' | '1:1' | '9:16' | '16:9' | '4:5'
+        width: 320,
+        rotation: 0,
+        flipH: false,
+        flipV: false,
+
+        // Color & Filters
+        bw: false,
+        sepia: false,
+        invert: false,
+        brightness: 0,
+        contrast: 0,
+        saturation: 0,
+        pixelate: 1,
+
+        // Borders & Overlays
+        borderWidth: 0,
+        borderColor: '#ffffff',
+        vignette: false,
+        watermark: '',
+        watermarkPos: 'bottom-right',
+
+        dither: true
+      }
+    };
+
+    // ========================================================
+    // DOM CACHE
+    // ========================================================
+    const dom = {
+      homeScreen: document.getElementById('homeScreen'),
+      editorScreen: document.getElementById('editorScreen'),
+      btnLogoHome: document.getElementById('btnLogoHome'),
+      btnStartOver: document.getElementById('btnStartOver'),
+
+      searchInput: document.getElementById('searchInput'),
+      searchClearBtn: document.getElementById('searchClearBtn'),
+      gifGrid: document.getElementById('gifGrid'),
+      btnLoadMore: document.getElementById('btnLoadMore'),
+      loadMoreContainer: document.getElementById('loadMoreContainer'),
+      quickTags: document.getElementById('quickTags'),
+      bannerTitleIcon: document.getElementById('bannerTitleIcon'),
+      bannerTitleText: document.getElementById('bannerTitleText'),
+      noticeBanner: document.getElementById('noticeBanner'),
+
+      btnUploadTrigger: document.getElementById('btnUploadTrigger'),
+      fileUploadInput: document.getElementById('fileUploadInput'),
+
+      editorFilename: document.getElementById('editorFilename'),
+      metaDimensions: document.getElementById('metaDimensions'),
+      metaFrameCount: document.getElementById('metaFrameCount'),
+      metaDuration: document.getElementById('metaDuration'),
+
+      previewCanvas: document.getElementById('previewCanvas'),
+      canvasContainer: document.getElementById('canvasContainer'),
+      timeDisplay: document.getElementById('timeDisplay'),
+      btnPlayPause: document.getElementById('btnPlayPause'),
+      btnStepBack: document.getElementById('btnStepBack'),
+      btnStepForward: document.getElementById('btnStepForward'),
+      inputTrimStart: document.getElementById('inputTrimStart'),
+      inputTrimEnd: document.getElementById('inputTrimEnd'),
+      valTrimStart: document.getElementById('valTrimStart'),
+      valTrimEnd: document.getElementById('valTrimEnd'),
+
+      // Text Layer Tools
+      btnAddTextLayer: document.getElementById('btnAddTextLayer'),
+      btnDeleteTextLayer: document.getElementById('btnDeleteTextLayer'),
+      textLayersList: document.getElementById('textLayersList'),
+      inputTextString: document.getElementById('inputTextString'),
+      textPosGroup: document.getElementById('textPosGroup'),
+      inputTextPosY: document.getElementById('inputTextPosY'),
+      valTextPosY: document.getElementById('valTextPosY'),
+      selectFontFamily: document.getElementById('selectFontFamily'),
+      inputTextFontSize: document.getElementById('inputTextFontSize'),
+      valTextFontSize: document.getElementById('valTextFontSize'),
+      inputTextColor: document.getElementById('inputTextColor'),
+      inputTextStrokeColor: document.getElementById('inputTextStrokeColor'),
+      inputTextStrokeWidth: document.getElementById('inputTextStrokeWidth'),
+      valTextStrokeWidth: document.getElementById('valTextStrokeWidth'),
+      selectTextBg: document.getElementById('selectTextBg'),
+      checkUppercase: document.getElementById('checkUppercase'),
+
+      // Timing Tools
+      inputSpeed: document.getElementById('inputSpeed'),
+      valSpeed: document.getElementById('valSpeed'),
+      checkReverse: document.getElementById('checkReverse'),
+      checkBoomerang: document.getElementById('checkBoomerang'),
+      checkPlayOnce: document.getElementById('checkPlayOnce'),
+
+      // Transform Tools
+      cropAspectGroup: document.getElementById('cropAspectGroup'),
+      inputWidth: document.getElementById('inputWidth'),
+      valWidth: document.getElementById('valWidth'),
+      btnRotateCw: document.getElementById('btnRotateCw'),
+      btnResetTransform: document.getElementById('btnResetTransform'),
+      btnFlipH: document.getElementById('btnFlipH'),
+      btnFlipV: document.getElementById('btnFlipV'),
+
+      // Filter Tools
+      btnFilterBw: document.getElementById('btnFilterBw'),
+      btnFilterSepia: document.getElementById('btnFilterSepia'),
+      btnFilterInvert: document.getElementById('btnFilterInvert'),
+      inputBrightness: document.getElementById('inputBrightness'),
+      valBrightness: document.getElementById('valBrightness'),
+      inputContrast: document.getElementById('inputContrast'),
+      valContrast: document.getElementById('valContrast'),
+      inputSaturation: document.getElementById('inputSaturation'),
+      valSaturation: document.getElementById('valSaturation'),
+      inputPixelate: document.getElementById('inputPixelate'),
+      valPixelate: document.getElementById('valPixelate'),
+      btnResetFilters: document.getElementById('btnResetFilters'),
+
+      // Overlays Tools
+      inputBorderWidth: document.getElementById('inputBorderWidth'),
+      valBorderWidth: document.getElementById('valBorderWidth'),
+      inputBorderColor: document.getElementById('inputBorderColor'),
+      checkVignette: document.getElementById('checkVignette'),
+      inputWatermark: document.getElementById('inputWatermark'),
+      selectWatermarkPos: document.getElementById('selectWatermarkPos'),
+      checkDithering: document.getElementById('checkDithering'),
+
+      btnExportGif: document.getElementById('btnExportGif'),
+      exportModal: document.getElementById('exportModal'),
+      btnCloseExportModal: document.getElementById('btnCloseExportModal'),
+      exportProgressSection: document.getElementById('exportProgressSection'),
+      exportProgressBar: document.getElementById('exportProgressBar'),
+      exportProgressDetail: document.getElementById('exportProgressDetail'),
+      exportProgressPercent: document.getElementById('exportProgressPercent'),
+      exportStatusText: document.getElementById('exportStatusText'),
+      exportResultSection: document.getElementById('exportResultSection'),
+      exportResultImg: document.getElementById('exportResultImg'),
+      exportResultSize: document.getElementById('exportResultSize'),
+      exportResultDims: document.getElementById('exportResultDims'),
+      btnSaveGifLink: document.getElementById('btnSaveGifLink'),
+
+      toast: document.getElementById('toast'),
+      toastMsg: document.getElementById('toastMsg')
+    };
+
+    const previewCtx = dom.previewCanvas.getContext('2d');
+
+    // ========================================================
+    // TOAST
+    // ========================================================
+    let toastTimeout;
+    function showToast(msg, duration = 3000) {
+      dom.toastMsg.textContent = msg;
+      dom.toast.style.display = 'flex';
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        dom.toast.style.display = 'none';
+      }, duration);
+    }
+
+    // ========================================================
+    // GIF SEARCH & TRENDING
+    // ========================================================
+    async function fetchGifs(reset = false) {
+      if (state.isLoadingGifs) return;
+      if (reset) {
+        state.offset = 0;
+        state.hasMoreGifs = true;
+        dom.gifGrid.innerHTML = '';
+      }
+
+      state.isLoadingGifs = true;
+      dom.btnLoadMore.innerHTML = '<div class="spinner"></div><span>Loading...</span>';
+
+      try {
+        const query = state.query.trim();
+        const endpoint = query
+          ? `/api/search?q=${encodeURIComponent(query)}&offset=${state.offset}&limit=${state.limit}`
+          : `/api/trending?offset=${state.offset}&limit=${state.limit}`;
+
+        const res = await fetch(endpoint);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (data.notice) {
+          dom.noticeBanner.style.display = 'block';
+          dom.noticeBanner.textContent = data.notice;
+        } else {
+          dom.noticeBanner.style.display = 'none';
+        }
+
+        const items = data.results || [];
+        if (items.length === 0 && reset) {
+          dom.gifGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align:center; padding: 48px 16px; color: var(--text-dim);">
+              <h3>No GIFs found</h3>
+              <p>Try searching for a different keyword!</p>
+            </div>`;
+          state.hasMoreGifs = false;
+        } else {
+          renderGifCards(items);
+          state.offset += items.length;
+          if (items.length < state.limit || (data.totalCount && state.offset >= data.totalCount)) {
+            state.hasMoreGifs = false;
+          }
+        }
+      } catch (err) {
+        console.error('Fetch error:', err);
+        showToast('Error loading GIFs from server.');
+      } finally {
+        state.isLoadingGifs = false;
+        dom.btnLoadMore.innerHTML = '<span>Load More GIFs</span>';
+        dom.loadMoreContainer.style.display = state.hasMoreGifs ? 'flex' : 'none';
+      }
+    }
+
+    function renderGifCards(items) {
+      for (const item of items) {
+        const card = document.createElement('div');
+        card.className = 'gif-card';
+        card.innerHTML = `
+          <img src="${item.thumbnail}" alt="${item.title}" loading="lazy">
+          <div class="gif-overlay">
+            <span class="gif-title">${item.title}</span>
+            <span class="gif-badge">Edit Whole GIF</span>
+          </div>
+        `;
+        card.addEventListener('click', () => {
+          loadGifFromProxy(item.gifUrl, item.title);
+        });
+        dom.gifGrid.appendChild(card);
+      }
+    }
+
+    // ========================================================
+    // GIF LOADING & DECODING
+    // ========================================================
+    async function loadGifFromProxy(targetUrl, title = 'Online GIF') {
+      showToast('Fetching and preparing GIF...');
+      try {
+        const proxyUrl = `/api/gif?url=${encodeURIComponent(targetUrl)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error(`Proxy error ${res.status}`);
+        const blob = await res.blob();
+        const buffer = await blob.arrayBuffer();
+
+        await decodeAndLaunchEditor(buffer, title);
+      } catch (err) {
+        console.error('Failed to load GIF:', err);
+        showToast(`Failed to load GIF: ${err.message}`);
+      }
+    }
+
+    async function decodeAndLaunchEditor(arrayBuffer, title = 'Imported GIF') {
+      showToast('Loading whole GIF animation...');
+      let decodedFrames = [];
+
+      // 1. ImageDecoder API
+      if (typeof window.ImageDecoder === 'function') {
+        try {
+          const decoder = new ImageDecoder({
+            data: arrayBuffer,
+            type: 'image/gif'
+          });
+
+          await decoder.tracks.ready;
+          const track = decoder.tracks.selectedTrack;
+          const totalFrames = Math.min(track.frameCount || 1, 300);
+
+          for (let i = 0; i < totalFrames; i++) {
+            const frameResult = await decoder.decode({ frameIndex: i });
+            const vFrame = frameResult.image;
+
+            let w = vFrame.displayWidth;
+            let h = vFrame.displayHeight;
+            if (w > 640 || h > 640) {
+              const scale = Math.min(640 / w, 640 / h);
+              w = Math.round(w * scale);
+              h = Math.round(h * scale);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(vFrame, 0, 0, w, h);
+
+            const durationMs = Math.round((vFrame.duration || 100000) / 1000);
+            vFrame.close();
+
+            decodedFrames.push({
+              canvas,
+              delay: Math.max(20, durationMs)
+            });
+          }
+        } catch (e) {
+          console.warn('ImageDecoder failed, using fallback:', e);
+          decodedFrames = [];
+        }
+      }
+
+      // 2. Pure-JS GIF89a Parser Fallback
+      if (decodedFrames.length === 0) {
+        try {
+          decodedFrames = parseGifFallback(arrayBuffer);
+        } catch (e) {
+          console.error('Fallback parser error:', e);
+        }
+      }
+
+      if (decodedFrames.length === 0) {
+        showToast('Unable to decode GIF frames.');
+        return;
+      }
+
+      openWholeGifEditor(decodedFrames, title);
+    }
+
+    function parseGifFallback(buffer) {
+      const bytes = new Uint8Array(buffer);
+      if (bytes[0] !== 0x47 || bytes[1] !== 0x49 || bytes[2] !== 0x46) {
+        throw new Error('Not a valid GIF');
+      }
+
+      let p = 6;
+      const screenWidth = bytes[p] | (bytes[p + 1] << 8);
+      const screenHeight = bytes[p + 2] | (bytes[p + 3] << 8);
+      const flags = bytes[p + 4];
+      p += 7;
+
+      const hasGCT = (flags & 0x80) !== 0;
+      const gctSize = 1 << ((flags & 0x07) + 1);
+      let globalColorTable = null;
+
+      if (hasGCT) {
+        globalColorTable = [];
+        for (let i = 0; i < gctSize; i++) {
+          globalColorTable.push([bytes[p], bytes[p + 1], bytes[p + 2]]);
+          p += 3;
+        }
+      }
+
+      const frames = [];
+      let gceDelay = 100;
+      let gceTransIndex = -1;
+
+      while (p < bytes.length) {
+        const b = bytes[p++];
+        if (b === 0x3b) break;
+
+        if (b === 0x21) {
+          const extType = bytes[p++];
+          if (extType === 0xf9) {
+            const blockSize = bytes[p++];
+            const gceFlags = bytes[p];
+            const hasTrans = (gceFlags & 0x01) !== 0;
+            const delayTime = (bytes[p + 1] | (bytes[p + 2] << 8)) * 10;
+            gceDelay = delayTime > 0 ? delayTime : 100;
+            gceTransIndex = hasTrans ? bytes[p + 3] : -1;
+            p += blockSize;
+            p++;
+          } else {
+            while (p < bytes.length) {
+              const subBlockLen = bytes[p++];
+              if (subBlockLen === 0) break;
+              p += subBlockLen;
+            }
+          }
+        } else if (b === 0x2c) {
+          const left = bytes[p] | (bytes[p + 1] << 8);
+          const top = bytes[p + 2] | (bytes[p + 3] << 8);
+          const width = bytes[p + 4] | (bytes[p + 5] << 8);
+          const height = bytes[p + 6] | (bytes[p + 7] << 8);
+          const imgFlags = bytes[p + 8];
+          p += 9;
+
+          const hasLCT = (imgFlags & 0x80) !== 0;
+          const lctSize = 1 << ((imgFlags & 0x07) + 1);
+          let localColorTable = globalColorTable;
+
+          if (hasLCT) {
+            localColorTable = [];
+            for (let i = 0; i < lctSize; i++) {
+              localColorTable.push([bytes[p], bytes[p + 1], bytes[p + 2]]);
+              p += 3;
+            }
+          }
+
+          const lzwMinCodeSize = bytes[p++];
+          const compressedBlocks = [];
+          while (p < bytes.length) {
+            const blockSize = bytes[p++];
+            if (blockSize === 0) break;
+            for (let i = 0; i < blockSize; i++) compressedBlocks.push(bytes[p++]);
+          }
+
+          const pixelIndices = decompressLzw(compressedBlocks, lzwMinCodeSize, width * height);
+
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.min(screenWidth || width, 640);
+          canvas.height = Math.min(screenHeight || height, 640);
+          const ctx = canvas.getContext('2d');
+          const imgData = ctx.createImageData(width, height);
+
+          for (let i = 0; i < pixelIndices.length && i < width * height; i++) {
+            const colorIdx = pixelIndices[i];
+            const dst = i * 4;
+            if (colorIdx === gceTransIndex || !localColorTable[colorIdx]) {
+              imgData.data[dst + 3] = 0;
+            } else {
+              const rgb = localColorTable[colorIdx];
+              imgData.data[dst] = rgb[0];
+              imgData.data[dst + 1] = rgb[1];
+              imgData.data[dst + 2] = rgb[2];
+              imgData.data[dst + 3] = 255;
+            }
+          }
+
+          ctx.putImageData(imgData, left, top);
+          frames.push({ canvas, delay: gceDelay });
+          if (frames.length >= 300) break;
+        }
+      }
+      return frames;
+    }
+
+    function decompressLzw(bytes, minCodeSize, pixelCount) {
+      const clearCode = 1 << minCodeSize;
+      const eoiCode = clearCode + 1;
+      let codeSize = minCodeSize + 1;
+      let dict = [];
+
+      function initDict() {
+        dict = [];
+        for (let i = 0; i < clearCode; i++) dict[i] = [i];
+        dict[clearCode] = [];
+        dict[eoiCode] = null;
+      }
+      initDict();
+
+      const output = [];
+      let bitPos = 0;
+
+      function readCode() {
+        let code = 0;
+        for (let i = 0; i < codeSize; i++) {
+          const byteIdx = (bitPos + i) >> 3;
+          if (byteIdx >= bytes.length) return eoiCode;
+          const bitInByte = (bitPos + i) & 7;
+          if ((bytes[byteIdx] & (1 << bitInByte)) !== 0) code |= (1 << i);
+        }
+        bitPos += codeSize;
+        return code;
+      }
+
+      let oldCode = -1;
+      while (output.length < pixelCount) {
+        const code = readCode();
+        if (code === clearCode) {
+          initDict();
+          codeSize = minCodeSize + 1;
+          oldCode = -1;
+          continue;
+        }
+        if (code === eoiCode) break;
+
+        if (oldCode === -1) {
+          if (dict[code]) {
+            output.push(...dict[code]);
+            oldCode = code;
+          }
+          continue;
+        }
+
+        let entry = dict[code];
+        if (!entry) {
+          if (code === dict.length) entry = [...dict[oldCode], dict[oldCode][0]];
+          else break;
+        }
+
+        output.push(...entry);
+        if (dict.length < 4096) {
+          dict.push([...dict[oldCode], entry[0]]);
+          if (dict.length > (1 << codeSize) && codeSize < 12) codeSize++;
+        }
+        oldCode = code;
+      }
+      return output;
+    }
+
+    // Direct Video file converter to frames
+    async function convertVideoFileToWholeGif(file) {
+      showToast('Converting video to GIF animation...');
+      const url = URL.createObjectURL(file);
+      const video = document.createElement('video');
+      video.src = url;
+      video.muted = true;
+      await video.play().then(() => video.pause());
+
+      const dur = Math.min(10, video.duration || 3);
+      const fps = 12;
+      const frameCount = Math.min(150, Math.floor(dur * fps));
+      let w = video.videoWidth || 320;
+      let h = video.videoHeight || 240;
+      if (w > 640 || h > 640) {
+        const scale = Math.min(640 / w, 640 / h);
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+      }
+
+      const frames = [];
+      const delay = Math.round(1000 / fps);
+
+      for (let i = 0; i < frameCount; i++) {
+        video.currentTime = (i / frameCount) * dur;
+        await new Promise(r => { video.onseeked = r; });
+        const c = document.createElement('canvas');
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext('2d');
+        ctx.drawImage(video, 0, 0, w, h);
+        frames.push({ canvas: c, delay });
+      }
+
+      openWholeGifEditor(frames, file.name);
+    }
+
+    // ========================================================
+    // OPEN WHOLE GIF STUDIO
+    // ========================================================
+    function openWholeGifEditor(frames, title) {
+      state.frames = frames;
+      state.originalWidth = frames[0].canvas.width;
+      state.originalHeight = frames[0].canvas.height;
+      state.totalDurationMs = frames.reduce((a, f) => a + f.delay, 0);
+
+      state.editor.width = Math.min(state.originalWidth, 640);
+      state.editor.trimStartPct = 0;
+      state.editor.trimEndPct = 100;
+      state.editor.speed = 1.0;
+      state.editor.reverse = false;
+      state.editor.boomerang = false;
+      state.editor.playOnce = false;
+      state.editor.aspectRatio = 'original';
+      state.editor.rotation = 0;
+      state.editor.flipH = false;
+      state.editor.flipV = false;
+      state.editor.bw = false;
+      state.editor.sepia = false;
+      state.editor.invert = false;
+      state.editor.brightness = 0;
+      state.editor.contrast = 0;
+      state.editor.saturation = 0;
+      state.editor.pixelate = 1;
+      state.editor.borderWidth = 0;
+      state.editor.borderColor = '#ffffff';
+      state.editor.vignette = false;
+      state.editor.watermark = '';
+
+      // Set meta
+      dom.editorFilename.textContent = title;
+      dom.metaDimensions.textContent = `${state.originalWidth} × ${state.originalHeight} px`;
+      dom.metaFrameCount.textContent = `${frames.length} Frames`;
+      dom.metaDuration.textContent = `${(state.totalDurationMs / 1000).toFixed(1)}s`;
+
+      // Reset UI controls
+      dom.inputWidth.value = state.editor.width;
+      dom.valWidth.textContent = `${state.editor.width} px`;
+      dom.inputTrimStart.value = 0;
+      dom.inputTrimEnd.value = 100;
+      dom.valTrimStart.textContent = '0.0s';
+      dom.valTrimEnd.textContent = `${(state.totalDurationMs / 1000).toFixed(1)}s`;
+
+      dom.inputSpeed.value = 1.0;
+      dom.valSpeed.textContent = '1.0x';
+      dom.checkReverse.checked = false;
+      dom.checkBoomerang.checked = false;
+      dom.checkPlayOnce.checked = false;
+
+      dom.inputBrightness.value = 0;
+      dom.inputContrast.value = 0;
+      dom.inputSaturation.value = 0;
+      dom.inputPixelate.value = 1;
+      dom.valBrightness.textContent = '0%';
+      dom.valContrast.textContent = '0%';
+      dom.valSaturation.textContent = '0%';
+      dom.valPixelate.textContent = '1 (Off)';
+      dom.inputBorderWidth.value = 0;
+      dom.valBorderWidth.textContent = '0 px';
+      dom.checkVignette.checked = false;
+      dom.inputWatermark.value = '';
+
+      renderTextLayersList();
+      syncActiveTextLayerToInputs();
+
+      // Show editor
+      dom.homeScreen.style.display = 'none';
+      dom.editorScreen.style.display = 'flex';
+      state.screen = 'editor';
+      state.isPlaying = true;
+      state.currentFrameIndex = 0;
+      state.lastFrameTimestamp = performance.now();
+
+      requestAnimationFrame(renderWholeGifLoop);
+    }
+
+    // ========================================================
+    // TEXT LAYERS MANAGEMENT
+    // ========================================================
+    function renderTextLayersList() {
+      dom.textLayersList.innerHTML = '';
+      state.textLayers.forEach(layer => {
+        const item = document.createElement('div');
+        item.className = `text-layer-card ${layer.id === state.activeTextLayerId ? 'active-layer' : ''}`;
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:700; font-size:0.82rem; color:#fff;">"${layer.text || 'Empty Text'}"</span>
+            <span style="font-size:0.7rem; color:var(--text-dim);">${layer.font} • ${layer.size}px</span>
+          </div>
+        `;
+        item.addEventListener('click', () => {
+          state.activeTextLayerId = layer.id;
+          renderTextLayersList();
+          syncActiveTextLayerToInputs();
+        });
+        dom.textLayersList.appendChild(item);
+      });
+    }
+
+    function getActiveTextLayer() {
+      return state.textLayers.find(l => l.id === state.activeTextLayerId) || state.textLayers[0];
+    }
+
+    function syncActiveTextLayerToInputs() {
+      const layer = getActiveTextLayer();
+      if (!layer) return;
+
+      dom.inputTextString.value = layer.text;
+      dom.inputTextPosY.value = layer.posY;
+      dom.valTextPosY.textContent = `${layer.posY}%`;
+      dom.selectFontFamily.value = layer.font;
+      dom.inputTextFontSize.value = layer.size;
+      dom.valTextFontSize.textContent = `${layer.size} px`;
+      dom.inputTextColor.value = layer.color;
+      dom.inputTextStrokeColor.value = layer.strokeColor;
+      dom.inputTextStrokeWidth.value = layer.strokeWidth;
+      dom.valTextStrokeWidth.textContent = `${layer.strokeWidth} px`;
+      dom.selectTextBg.value = layer.bgStyle;
+      dom.checkUppercase.checked = layer.uppercase;
+    }
+
+    // ========================================================
+    // WHOLE GIF REAL-TIME ANIMATION LOOP
+    // ========================================================
+    function getTrimmedFrameIndices() {
+      const total = state.frames.length;
+      if (total === 0) return [0];
+
+      const start = Math.floor((state.editor.trimStartPct / 100) * total);
+      const end = Math.min(total - 1, Math.floor((state.editor.trimEndPct / 100) * total));
+      const validStart = Math.min(start, end);
+      const validEnd = Math.max(start, end);
+
+      const indices = [];
+      for (let i = validStart; i <= validEnd; i++) indices.push(i);
+
+      if (state.editor.reverse) indices.reverse();
+
+      if (state.editor.boomerang && indices.length > 2) {
+        const pingPong = [...indices];
+        for (let j = indices.length - 2; j >= 1; j--) pingPong.push(indices[j]);
+        return pingPong;
+      }
+
+      return indices.length > 0 ? indices : [0];
+    }
+
+    function renderWholeGifLoop(timestamp) {
+      if (state.screen !== 'editor') return;
+
+      const activeIndices = getTrimmedFrameIndices();
+      if (activeIndices.length === 0) {
+        requestAnimationFrame(renderWholeGifLoop);
+        return;
+      }
+
+      if (state.isPlaying) {
+        const curRealIdx = activeIndices[state.currentFrameIndex % activeIndices.length];
+        const curDelay = (state.frames[curRealIdx]?.delay || 100) / state.editor.speed;
+
+        if (timestamp - state.lastFrameTimestamp >= curDelay) {
+          state.lastFrameTimestamp = timestamp;
+
+          if (state.editor.playOnce && state.currentFrameIndex >= activeIndices.length - 1) {
+            state.isPlaying = false;
+            dom.btnPlayPause.textContent = '▶';
+          } else {
+            state.currentFrameIndex = (state.currentFrameIndex + 1) % activeIndices.length;
+          }
+        }
+      }
+
+      const activeIdx = activeIndices[state.currentFrameIndex % activeIndices.length];
+      drawWholeGifFrame(activeIdx);
+
+      // Update time display
+      const currentMs = activeIndices.slice(0, (state.currentFrameIndex % activeIndices.length) + 1)
+        .reduce((sum, idx) => sum + (state.frames[idx]?.delay || 100), 0);
+      const totalMs = activeIndices.reduce((sum, idx) => sum + (state.frames[idx]?.delay || 100), 0);
+      dom.timeDisplay.textContent = `${(currentMs / 1000).toFixed(1)}s / ${(totalMs / 1000).toFixed(1)}s`;
+
+      requestAnimationFrame(renderWholeGifLoop);
+    }
+
+    /**
+     * Draws the composite Whole GIF frame to a canvas context
+     */
+    function drawWholeGifFrame(frameIndex, targetCtx = previewCtx, forceWidth = 0, forceHeight = 0) {
+      const frame = state.frames[frameIndex];
+      if (!frame) return;
+
+      const baseCanvas = frame.canvas;
+      const targetW = forceWidth || state.editor.width;
+
+      // Calculate aspect ratio crop
+      let aspectMultiplier = state.originalHeight / state.originalWidth;
+      if (state.editor.aspectRatio === '1:1') aspectMultiplier = 1.0;
+      else if (state.editor.aspectRatio === '9:16') aspectMultiplier = 16 / 9;
+      else if (state.editor.aspectRatio === '16:9') aspectMultiplier = 9 / 16;
+      else if (state.editor.aspectRatio === '4:5') aspectMultiplier = 5 / 4;
+
+      const targetH = forceHeight || Math.round(targetW * aspectMultiplier);
+
+      const rot = state.editor.rotation % 360;
+      const isRotated90 = rot === 90 || rot === 270;
+      const canvasW = isRotated90 ? targetH : targetW;
+      const canvasH = isRotated90 ? targetW : targetH;
+
+      const canvasElem = targetCtx.canvas;
+      if (canvasElem.width !== canvasW || canvasElem.height !== canvasH) {
+        canvasElem.width = canvasW;
+        canvasElem.height = canvasH;
+      }
+
+      targetCtx.save();
+      targetCtx.clearRect(0, 0, canvasW, canvasH);
+
+      // Transforms
+      targetCtx.translate(canvasW / 2, canvasH / 2);
+      if (rot !== 0) targetCtx.rotate((rot * Math.PI) / 180);
+      targetCtx.scale(state.editor.flipH ? -1 : 1, state.editor.flipV ? -1 : 1);
+
+      // Cropped Draw
+      if (state.editor.aspectRatio !== 'original') {
+        const srcAspect = baseCanvas.width / baseCanvas.height;
+        const dstAspect = targetW / targetH;
+        let sx = 0, sy = 0, sw = baseCanvas.width, sh = baseCanvas.height;
+
+        if (srcAspect > dstAspect) {
+          sw = baseCanvas.height * dstAspect;
+          sx = (baseCanvas.width - sw) / 2;
+        } else {
+          sh = baseCanvas.width / dstAspect;
+          sy = (baseCanvas.height - sh) / 2;
+        }
+        targetCtx.drawImage(baseCanvas, sx, sy, sw, sh, -targetW / 2, -targetH / 2, targetW, targetH);
+      } else {
+        targetCtx.drawImage(baseCanvas, -targetW / 2, -targetH / 2, targetW, targetH);
+      }
+      targetCtx.restore();
+
+      // Filters
+      applyFilters(targetCtx, canvasW, canvasH);
+
+      // Frame & Border & Vignette
+      applyOverlaysAndBorder(targetCtx, canvasW, canvasH);
+
+      // Render Text Layers over the Whole GIF
+      renderTextOverlays(targetCtx, canvasW, canvasH);
+
+      // Watermark
+      if (state.editor.watermark.trim()) {
+        renderWatermark(targetCtx, canvasW, canvasH);
+      }
+    }
+
+    // ========================================================
+    // COLOR FILTERS & ADJUSTMENTS
+    // ========================================================
+    function applyFilters(ctx, w, h) {
+      const ed = state.editor;
+      const hasColorFilter = ed.bw || ed.sepia || ed.invert || ed.brightness !== 0 || ed.contrast !== 0 || ed.saturation !== 0;
+      const hasPixelate = ed.pixelate > 1;
+
+      if (!hasColorFilter && !hasPixelate) return;
+
+      const imgData = ctx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+
+      if (hasColorFilter) {
+        const bright = ed.brightness * 2.55;
+        const contrastFactor = (259 * (ed.contrast + 255)) / (255 * (259 - ed.contrast));
+        const sat = (ed.saturation + 100) / 100;
+
+        for (let i = 0; i < data.length; i += 4) {
+          let r = data[i];
+          let g = data[i + 1];
+          let b = data[i + 2];
+
+          if (ed.bw) {
+            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+            r = g = b = gray;
+          }
+
+          if (ed.sepia) {
+            const tr = 0.393 * r + 0.769 * g + 0.189 * b;
+            const tg = 0.349 * r + 0.686 * g + 0.168 * b;
+            const tb = 0.272 * r + 0.534 * g + 0.131 * b;
+            r = Math.min(255, tr);
+            g = Math.min(255, tg);
+            b = Math.min(255, tb);
+          }
+
+          if (ed.invert) {
+            r = 255 - r;
+            g = 255 - g;
+            b = 255 - b;
+          }
+
+          if (ed.brightness !== 0) {
+            r += bright;
+            g += bright;
+            b += bright;
+          }
+
+          if (ed.contrast !== 0) {
+            r = contrastFactor * (r - 128) + 128;
+            g = contrastFactor * (g - 128) + 128;
+            b = contrastFactor * (b - 128) + 128;
+          }
+
+          if (ed.saturation !== 0 && !ed.bw) {
+            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+            r = gray + (r - gray) * sat;
+            g = gray + (g - gray) * sat;
+            b = gray + (b - gray) * sat;
+          }
+
+          data[i] = Math.min(255, Math.max(0, r));
+          data[i + 1] = Math.min(255, Math.max(0, g));
+          data[i + 2] = Math.min(255, Math.max(0, b));
+        }
+      }
+
+      if (hasPixelate) {
+        const blockSize = Math.round(ed.pixelate);
+        for (let y = 0; y < h; y += blockSize) {
+          for (let x = 0; x < w; x += blockSize) {
+            const pIdx = (y * w + x) * 4;
+            const pr = data[pIdx];
+            const pg = data[pIdx + 1];
+            const pb = data[pIdx + 2];
+            const pa = data[pIdx + 3];
+
+            for (let dy = 0; dy < blockSize && y + dy < h; dy++) {
+              for (let dx = 0; dx < blockSize && x + dx < w; dx++) {
+                const curIdx = ((y + dy) * w + (x + dx)) * 4;
+                data[curIdx] = pr;
+                data[curIdx + 1] = pg;
+                data[curIdx + 2] = pb;
+                data[curIdx + 3] = pa;
+              }
+            }
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    // ========================================================
+    // BORDER & OVERLAYS
+    // ========================================================
+    function applyOverlaysAndBorder(ctx, w, h) {
+      if (state.editor.borderWidth > 0) {
+        ctx.save();
+        ctx.strokeStyle = state.editor.borderColor;
+        ctx.lineWidth = state.editor.borderWidth;
+        ctx.strokeRect(0, 0, w, h);
+        ctx.restore();
+      }
+
+      if (state.editor.vignette) {
+        ctx.save();
+        const gradient = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.3, w / 2, h / 2, Math.max(w, h) * 0.7);
+        gradient.addColorStop(0, 'rgba(0,0,0,0)');
+        gradient.addColorStop(1, 'rgba(0,0,0,0.65)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+      }
+    }
+
+    // ========================================================
+    // TEXT RENDERING OVER GIF
+    // ========================================================
+    function renderTextOverlays(ctx, w, h) {
+      for (const layer of state.textLayers) {
+        if (!layer.text || !layer.text.trim()) continue;
+
+        const text = layer.uppercase ? layer.text.toUpperCase() : layer.text;
+        const fontSize = layer.size;
+        ctx.save();
+        ctx.font = `900 ${fontSize}px ${layer.font}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const yPos = (layer.posY / 100) * h;
+        const textMetrics = ctx.measureText(text);
+        const textW = textMetrics.width;
+
+        // Background Box
+        if (layer.bgStyle === 'black-bar') {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+          ctx.fillRect(0, yPos - fontSize * 0.7, w, fontSize * 1.4);
+        } else if (layer.bgStyle === 'translucent-pill') {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+          const pad = 16;
+          ctx.beginPath();
+          ctx.roundRect((w - textW) / 2 - pad, yPos - fontSize * 0.7, textW + pad * 2, fontSize * 1.4, 100);
+          ctx.fill();
+        } else if (layer.bgStyle === 'white-box') {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, yPos - fontSize * 0.7, w, fontSize * 1.4);
+        }
+
+        // Outline
+        if (layer.strokeWidth > 0 && layer.bgStyle !== 'white-box') {
+          ctx.strokeStyle = layer.strokeColor;
+          ctx.lineWidth = layer.strokeWidth;
+          ctx.lineJoin = 'round';
+          ctx.strokeText(text, w / 2, yPos, w - 24);
+        }
+
+        // Fill
+        ctx.fillStyle = layer.bgStyle === 'white-box' ? '#000000' : layer.color;
+        ctx.fillText(text, w / 2, yPos, w - 24);
+        ctx.restore();
+      }
+    }
+
+    function renderWatermark(ctx, w, h) {
+      const wm = state.editor.watermark.trim();
+      ctx.save();
+      ctx.font = '700 13px system-ui, sans-serif';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+      ctx.shadowBlur = 4;
+
+      let x = w - 10;
+      let y = h - 10;
+      ctx.textAlign = 'right';
+
+      if (state.editor.watermarkPos === 'bottom-left') {
+        x = 10; ctx.textAlign = 'left';
+      } else if (state.editor.watermarkPos === 'top-right') {
+        y = 20; ctx.textAlign = 'right';
+      } else if (state.editor.watermarkPos === 'top-left') {
+        x = 10; y = 20; ctx.textAlign = 'left';
+      }
+
+      ctx.fillText(wm, x, y);
+      ctx.restore();
+    }
+
+    // ========================================================
+    // HANDCRAFTED MEDIAN-CUT PALETTE QUANTIZATION
+    // ========================================================
+    function quantizeMedianCut(rgbaArray, maxColors = 256) {
+      const colorMap = new Map();
+      for (let i = 0; i < rgbaArray.length; i += 4) {
+        if (rgbaArray[i + 3] < 128) continue;
+        const key = (rgbaArray[i] << 16) | (rgbaArray[i + 1] << 8) | rgbaArray[i + 2];
+        colorMap.set(key, (colorMap.get(key) || 0) + 1);
+      }
+
+      const colors = [];
+      for (const [key, count] of colorMap.entries()) {
+        colors.push({
+          r: (key >> 16) & 0xff,
+          g: (key >> 8) & 0xff,
+          b: key & 0xff,
+          count
+        });
+      }
+
+      if (colors.length === 0) return [{ r: 0, g: 0, b: 0 }];
+
+      const boxes = [{ colors }];
+      while (boxes.length < maxColors) {
+        let bestBoxIdx = -1;
+        let maxRange = -1;
+        let bestChannel = 'r';
+
+        for (let i = 0; i < boxes.length; i++) {
+          const box = boxes[i];
+          if (box.colors.length <= 1) continue;
+
+          let minR = 255, maxR = 0, minG = 255, maxG = 0, minB = 255, maxB = 0;
+          for (const c of box.colors) {
+            if (c.r < minR) minR = c.r;
+            if (c.r > maxR) maxR = c.r;
+            if (c.g < minG) minG = c.g;
+            if (c.g > maxG) maxG = c.g;
+            if (c.b < minB) minB = c.b;
+            if (c.b > maxB) maxB = c.b;
+          }
+
+          const rRange = maxR - minR;
+          const gRange = maxG - minG;
+          const bRange = maxB - minB;
+          const range = Math.max(rRange, gRange, bRange);
+
+          if (range > maxRange) {
+            maxRange = range;
+            bestBoxIdx = i;
+            bestChannel = rRange >= gRange && rRange >= bRange ? 'r' : (gRange >= bRange ? 'g' : 'b');
+          }
+        }
+
+        if (bestBoxIdx === -1 || maxRange === 0) break;
+
+        const boxToSplit = boxes.splice(bestBoxIdx, 1)[0];
+        boxToSplit.colors.sort((a, b) => a[bestChannel] - b[bestChannel]);
+        const mid = Math.floor(boxToSplit.colors.length / 2);
+        boxes.push({ colors: boxToSplit.colors.slice(0, mid) });
+        boxes.push({ colors: boxToSplit.colors.slice(mid) });
+      }
+
+      return boxes.map(box => {
+        let sumR = 0, sumG = 0, sumB = 0, total = 0;
+        for (const c of box.colors) {
+          sumR += c.r * c.count;
+          sumG += c.g * c.count;
+          sumB += c.b * c.count;
+          total += c.count;
+        }
+        return {
+          r: Math.round(sumR / total),
+          g: Math.round(sumG / total),
+          b: Math.round(sumB / total)
+        };
+      });
+    }
+
+    // ========================================================
+    // HANDCRAFTED LZW ENCODER (GIF89a)
+    // ========================================================
+    function lzwEncode(indexedPixels, minCodeSize) {
+      const clearCode = 1 << minCodeSize;
+      const eoiCode = clearCode + 1;
+      let codeSize = minCodeSize + 1;
+      let nextCode = clearCode + 2;
+
+      const output = [];
+      let curAccum = 0;
+      let curBits = 0;
+      const subBlock = [];
+
+      function writeBits(code, bits) {
+        curAccum |= (code << curBits);
+        curBits += bits;
+        while (curBits >= 8) {
+          subBlock.push(curAccum & 0xff);
+          if (subBlock.length === 254) {
+            output.push(subBlock.length, ...subBlock);
+            subBlock.length = 0;
+          }
+          curAccum >>= 8;
+          curBits -= 8;
+        }
+      }
+
+      function flushBits() {
+        if (curBits > 0) {
+          subBlock.push(curAccum & 0xff);
+          curAccum = 0;
+          curBits = 0;
+        }
+        if (subBlock.length > 0) {
+          output.push(subBlock.length, ...subBlock);
+          subBlock.length = 0;
+        }
+        output.push(0x00);
+      }
+
+      writeBits(clearCode, codeSize);
+
+      let prefix = indexedPixels[0];
+      const dict = new Map();
+
+      for (let i = 1; i < indexedPixels.length; i++) {
+        const pixel = indexedPixels[i];
+        const key = (prefix << 12) | pixel;
+
+        if (dict.has(key)) {
+          prefix = dict.get(key);
+        } else {
+          writeBits(prefix, codeSize);
+
+          if (nextCode < 4096) {
+            dict.set(key, nextCode++);
+            if (nextCode > (1 << codeSize) && codeSize < 12) {
+              codeSize++;
+            }
+          } else {
+            writeBits(clearCode, codeSize);
+            dict.clear();
+            codeSize = minCodeSize + 1;
+            nextCode = clearCode + 2;
+          }
+          prefix = pixel;
+        }
+      }
+
+      writeBits(prefix, codeSize);
+      writeBits(eoiCode, codeSize);
+      flushBits();
+
+      return output;
+    }
+
+    // ========================================================
+    // WHOLE GIF EXPORT PIPELINE
+    // ========================================================
+    async function exportEditedWholeGif() {
+      const activeIndices = getTrimmedFrameIndices();
+      if (activeIndices.length === 0) {
+        showToast('No active frames to export!');
+        return;
+      }
+
+      dom.exportModal.style.display = 'flex';
+      dom.exportProgressSection.style.display = 'flex';
+      dom.exportResultSection.style.display = 'none';
+      dom.exportProgressBar.style.width = '0%';
+      dom.exportProgressPercent.textContent = '0%';
+      dom.exportStatusText.textContent = 'Compiling Whole GIF with text & effects...';
+
+      await new Promise(r => setTimeout(r, 40));
+
+      const outW = dom.previewCanvas.width;
+      const outH = dom.previewCanvas.height;
+
+      const bytes = [];
+      bytes.push(0x47, 0x49, 0x46, 0x38, 0x39, 0x61); // GIF89a
+      bytes.push(outW & 0xff, (outW >> 8) & 0xff);
+      bytes.push(outH & 0xff, (outH >> 8) & 0xff);
+      bytes.push(0x70, 0x00, 0x00); // 8-bit color resolution
+
+      if (!state.editor.playOnce) {
+        bytes.push(0x21, 0xff, 0x0b);
+        for (const c of 'NETSCAPE2.0') bytes.push(c.charCodeAt(0));
+        bytes.push(0x03, 0x01, 0x00, 0x00, 0x00);
+      }
+
+      const total = activeIndices.length;
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = outW;
+      offCanvas.height = outH;
+      const offCtx = offCanvas.getContext('2d');
+
+      const dither = state.editor.dither;
+
+      for (let fIdx = 0; fIdx < total; fIdx++) {
+        const frameIdx = activeIndices[fIdx];
+        const pct = Math.round((fIdx / total) * 100);
+        dom.exportProgressBar.style.width = `${pct}%`;
+        dom.exportProgressPercent.textContent = `${pct}%`;
+        dom.exportProgressDetail.textContent = `Frame ${fIdx + 1} / ${total}`;
+        dom.exportStatusText.textContent = `Rendering text & quantizing frame ${fIdx + 1} of ${total}...`;
+
+        await new Promise(r => setTimeout(r, 0));
+
+        drawWholeGifFrame(frameIdx, offCtx, outW, outH);
+
+        const imgData = offCtx.getImageData(0, 0, outW, outH);
+        const pixels = imgData.data;
+
+        const palette = quantizeMedianCut(pixels, 256);
+        while (palette.length < 2) palette.push({ r: 0, g: 0, b: 0 });
+
+        let pSize = 1;
+        while ((1 << pSize) < palette.length) pSize++;
+        const fullSize = 1 << pSize;
+        while (palette.length < fullSize) palette.push({ r: 0, g: 0, b: 0 });
+
+        const indexed = new Uint8Array(outW * outH);
+        const colorLookup = new Map();
+
+        function getClosestColorIndex(r, g, b) {
+          const key = (r << 16) | (g << 8) | b;
+          if (colorLookup.has(key)) return colorLookup.get(key);
+          let bestIdx = 0;
+          let bestDist = Infinity;
+          for (let p = 0; p < palette.length; p++) {
+            const dr = r - palette[p].r;
+            const dg = g - palette[p].g;
+            const db = b - palette[p].b;
+            const dist = dr * dr + dg * dg + db * db;
+            if (dist < bestDist) {
+              bestDist = dist;
+              bestIdx = p;
+              if (dist === 0) break;
+            }
+          }
+          colorLookup.set(key, bestIdx);
+          return bestIdx;
+        }
+
+        if (dither) {
+          const ditherBuf = new Float32Array(pixels.length);
+          for (let i = 0; i < pixels.length; i++) ditherBuf[i] = pixels[i];
+
+          for (let y = 0; y < outH; y++) {
+            for (let x = 0; x < outW; x++) {
+              const idx = (y * outW + x) * 4;
+              const r = Math.min(255, Math.max(0, ditherBuf[idx]));
+              const g = Math.min(255, Math.max(0, ditherBuf[idx + 1]));
+              const b = Math.min(255, Math.max(0, ditherBuf[idx + 2]));
+
+              const pIdx = getClosestColorIndex(Math.round(r), Math.round(g), Math.round(b));
+              indexed[y * outW + x] = pIdx;
+
+              const er = r - palette[pIdx].r;
+              const eg = g - palette[pIdx].g;
+              const eb = b - palette[pIdx].b;
+
+              if (x + 1 < outW) {
+                const n = idx + 4;
+                ditherBuf[n] += er * 7 / 16;
+                ditherBuf[n + 1] += eg * 7 / 16;
+                ditherBuf[n + 2] += eb * 7 / 16;
+              }
+              if (y + 1 < outH) {
+                if (x > 0) {
+                  const n = ((y + 1) * outW + (x - 1)) * 4;
+                  ditherBuf[n] += er * 3 / 16;
+                  ditherBuf[n + 1] += eg * 3 / 16;
+                  ditherBuf[n + 2] += eb * 3 / 16;
+                }
+                const n = ((y + 1) * outW + x) * 4;
+                ditherBuf[n] += er * 5 / 16;
+                ditherBuf[n + 1] += eg * 5 / 16;
+                ditherBuf[n + 2] += eb * 5 / 16;
+                if (x + 1 < outW) {
+                  const ne = ((y + 1) * outW + (x + 1)) * 4;
+                  ditherBuf[ne] += er * 1 / 16;
+                  ditherBuf[ne + 1] += eg * 1 / 16;
+                  ditherBuf[ne + 2] += eb * 1 / 16;
+                }
+              }
+            }
+          }
+        } else {
+          for (let i = 0; i < outW * outH; i++) {
+            const pIdx = i << 2;
+            indexed[i] = getClosestColorIndex(pixels[pIdx], pixels[pIdx + 1], pixels[pIdx + 2]);
+          }
+        }
+
+        const baseFrame = state.frames[frameIdx];
+        const delayCentisecs = Math.max(2, Math.round((baseFrame.delay / state.editor.speed) / 10));
+
+        bytes.push(0x21, 0xf9, 0x04);
+        bytes.push(0x00);
+        bytes.push(delayCentisecs & 0xff, (delayCentisecs >> 8) & 0xff);
+        bytes.push(0x00, 0x00);
+
+        bytes.push(0x2c);
+        bytes.push(0x00, 0x00, 0x00, 0x00);
+        bytes.push(outW & 0xff, (outW >> 8) & 0xff);
+        bytes.push(outH & 0xff, (outH >> 8) & 0xff);
+        const packed = 0x80 | (pSize - 1);
+        bytes.push(packed);
+
+        for (const color of palette) {
+          bytes.push(color.r, color.g, color.b);
+        }
+
+        const minCodeSize = Math.max(2, pSize);
+        bytes.push(minCodeSize);
+        const compressed = lzwEncode(indexed, minCodeSize);
+        bytes.push(...compressed);
+      }
+
+      bytes.push(0x3b);
+
+      dom.exportProgressBar.style.width = '100%';
+      dom.exportProgressPercent.textContent = '100%';
+
+      const gifBlob = new Blob([new Uint8Array(bytes)], { type: 'image/gif' });
+      const gifUrl = URL.createObjectURL(gifBlob);
+
+      dom.exportProgressSection.style.display = 'none';
+      dom.exportResultSection.style.display = 'flex';
+      dom.exportResultImg.src = gifUrl;
+      dom.btnSaveGifLink.href = gifUrl;
+      dom.btnSaveGifLink.download = `giflab_edited_${Date.now()}.gif`;
+
+      const sizeKb = (gifBlob.size / 1024).toFixed(1);
+      const sizeMb = (gifBlob.size / (1024 * 1024)).toFixed(2);
+      dom.exportResultSize.textContent = gifBlob.size > 1024 * 1024 ? `${sizeMb} MB` : `${sizeKb} KB`;
+      dom.exportResultDims.textContent = `${outW} × ${outH} px`;
+    }
+
+    // ========================================================
+    // EVENT LISTENERS & UI LOGIC
+    // ========================================================
+
+    // Tabs Switcher
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetTab = document.getElementById(btn.dataset.tab);
+        if (targetTab) targetTab.classList.add('active');
+      });
+    });
+
+    // Home & Search
+    dom.btnLogoHome.addEventListener('click', () => {
+      dom.editorScreen.style.display = 'none';
+      dom.homeScreen.style.display = 'flex';
+      state.screen = 'home';
+    });
+
+    dom.btnStartOver.addEventListener('click', () => {
+      dom.editorScreen.style.display = 'none';
+      dom.homeScreen.style.display = 'flex';
+      state.screen = 'home';
+    });
+
+    let searchDebounce;
+    dom.searchInput.addEventListener('input', (e) => {
+      const q = e.target.value;
+      dom.searchClearBtn.style.display = q ? 'block' : 'none';
+      clearTimeout(searchDebounce);
+      searchDebounce = setTimeout(() => {
+        state.query = q;
+        dom.bannerTitleIcon.textContent = q ? '🔍' : '🔥';
+        dom.bannerTitleText.textContent = q ? `Results for "${q}"` : 'Trending GIFs';
+        fetchGifs(true);
+      }, 350);
+    });
+
+    dom.searchClearBtn.addEventListener('click', () => {
+      dom.searchInput.value = '';
+      dom.searchClearBtn.style.display = 'none';
+      state.query = '';
+      dom.bannerTitleIcon.textContent = '🔥';
+      dom.bannerTitleText.textContent = 'Trending GIFs';
+      fetchGifs(true);
+    });
+
+    dom.quickTags.addEventListener('click', (e) => {
+      const chip = e.target.closest('.tag-chip');
+      if (!chip) return;
+      document.querySelectorAll('.tag-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const tagQuery = chip.dataset.query || '';
+      dom.searchInput.value = tagQuery;
+      dom.searchClearBtn.style.display = tagQuery ? 'block' : 'none';
+      state.query = tagQuery;
+      dom.bannerTitleIcon.textContent = tagQuery ? '🔍' : '🔥';
+      dom.bannerTitleText.textContent = tagQuery ? `Results for "${tagQuery}"` : 'Trending GIFs';
+      fetchGifs(true);
+    });
+
+    dom.btnLoadMore.addEventListener('click', () => {
+      fetchGifs(false);
+    });
+
+    // File Upload (GIF or Video directly into Whole GIF Editor)
+    dom.btnUploadTrigger.addEventListener('click', () => {
+      dom.fileUploadInput.click();
+    });
+
+    dom.fileUploadInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.type.startsWith('video/')) {
+        convertVideoFileToWholeGif(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          decodeAndLaunchEditor(reader.result, file.name);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+    });
+
+    // Timeline Controls
+    dom.btnPlayPause.addEventListener('click', () => {
+      state.isPlaying = !state.isPlaying;
+      dom.btnPlayPause.textContent = state.isPlaying ? '⏸' : '▶';
+    });
+
+    dom.btnStepBack.addEventListener('click', () => {
+      state.isPlaying = false;
+      dom.btnPlayPause.textContent = '▶';
+      const active = getTrimmedFrameIndices();
+      state.currentFrameIndex = (state.currentFrameIndex - 1 + active.length) % active.length;
+    });
+
+    dom.btnStepForward.addEventListener('click', () => {
+      state.isPlaying = false;
+      dom.btnPlayPause.textContent = '▶';
+      const active = getTrimmedFrameIndices();
+      state.currentFrameIndex = (state.currentFrameIndex + 1) % active.length;
+    });
+
+    dom.inputTrimStart.addEventListener('input', (e) => {
+      state.editor.trimStartPct = parseInt(e.target.value, 10);
+      const curSec = ((state.editor.trimStartPct / 100) * (state.totalDurationMs / 1000)).toFixed(1);
+      dom.valTrimStart.textContent = `${curSec}s`;
+    });
+
+    dom.inputTrimEnd.addEventListener('input', (e) => {
+      state.editor.trimEndPct = parseInt(e.target.value, 10);
+      const curSec = ((state.editor.trimEndPct / 100) * (state.totalDurationMs / 1000)).toFixed(1);
+      dom.valTrimEnd.textContent = `${curSec}s`;
+    });
+
+    // Text Layers UI
+    dom.btnAddTextLayer.addEventListener('click', () => {
+      const newId = Date.now();
+      state.textLayers.push({
+        id: newId,
+        text: 'NEW CAPTION',
+        posY: 15,
+        font: 'Impact',
+        size: 32,
+        color: '#ffffff',
+        strokeColor: '#000000',
+        strokeWidth: 4,
+        bgStyle: 'none',
+        uppercase: true
+      });
+      state.activeTextLayerId = newId;
+      renderTextLayersList();
+      syncActiveTextLayerToInputs();
+    });
+
+    dom.btnDeleteTextLayer.addEventListener('click', () => {
+      if (state.textLayers.length <= 1) {
+        showToast('At least one text layer must remain.');
+        return;
+      }
+      state.textLayers = state.textLayers.filter(l => l.id !== state.activeTextLayerId);
+      state.activeTextLayerId = state.textLayers[0].id;
+      renderTextLayersList();
+      syncActiveTextLayerToInputs();
+    });
+
+    dom.inputTextString.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) {
+        layer.text = e.target.value;
+        renderTextLayersList();
+      }
+    });
+
+    dom.textPosGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      dom.textPosGroup.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const layer = getActiveTextLayer();
+      if (!layer) return;
+
+      if (btn.dataset.pos === 'top') layer.posY = 15;
+      else if (btn.dataset.pos === 'center') layer.posY = 50;
+      else if (btn.dataset.pos === 'bottom') layer.posY = 85;
+
+      dom.inputTextPosY.value = layer.posY;
+      dom.valTextPosY.textContent = `${layer.posY}%`;
+    });
+
+    dom.inputTextPosY.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) {
+        layer.posY = parseInt(e.target.value, 10);
+        dom.valTextPosY.textContent = `${layer.posY}%`;
+      }
+    });
+
+    dom.selectFontFamily.addEventListener('change', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) layer.font = e.target.value;
+    });
+
+    dom.inputTextFontSize.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) {
+        layer.size = parseInt(e.target.value, 10);
+        dom.valTextFontSize.textContent = `${layer.size} px`;
+      }
+    });
+
+    dom.inputTextColor.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) layer.color = e.target.value;
+    });
+
+    dom.inputTextStrokeColor.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) layer.strokeColor = e.target.value;
+    });
+
+    dom.inputTextStrokeWidth.addEventListener('input', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) {
+        layer.strokeWidth = parseInt(e.target.value, 10);
+        dom.valTextStrokeWidth.textContent = `${layer.strokeWidth} px`;
+      }
+    });
+
+    dom.selectTextBg.addEventListener('change', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) layer.bgStyle = e.target.value;
+    });
+
+    dom.checkUppercase.addEventListener('change', (e) => {
+      const layer = getActiveTextLayer();
+      if (layer) layer.uppercase = e.target.checked;
+    });
+
+    // Timing Settings
+    dom.inputSpeed.addEventListener('input', (e) => {
+      state.editor.speed = parseFloat(e.target.value);
+      dom.valSpeed.textContent = `${state.editor.speed}x`;
+    });
+    document.querySelectorAll('[data-speed]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-speed]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.editor.speed = parseFloat(btn.dataset.speed);
+        dom.inputSpeed.value = state.editor.speed;
+        dom.valSpeed.textContent = `${state.editor.speed}x`;
+      });
+    });
+
+    dom.checkReverse.addEventListener('change', (e) => {
+      state.editor.reverse = e.target.checked;
+    });
+    dom.checkBoomerang.addEventListener('change', (e) => {
+      state.editor.boomerang = e.target.checked;
+    });
+    dom.checkPlayOnce.addEventListener('change', (e) => {
+      state.editor.playOnce = e.target.checked;
+    });
+
+    // Crop Aspect Ratio
+    dom.cropAspectGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      dom.cropAspectGroup.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.editor.aspectRatio = btn.dataset.aspect;
+    });
+
+    dom.inputWidth.addEventListener('input', (e) => {
+      state.editor.width = parseInt(e.target.value, 10);
+      dom.valWidth.textContent = `${state.editor.width} px`;
+    });
+
+    dom.btnRotateCw.addEventListener('click', () => {
+      state.editor.rotation = (state.editor.rotation + 90) % 360;
+    });
+    dom.btnFlipH.addEventListener('click', () => {
+      state.editor.flipH = !state.editor.flipH;
+    });
+    dom.btnFlipV.addEventListener('click', () => {
+      state.editor.flipV = !state.editor.flipV;
+    });
+    dom.btnResetTransform.addEventListener('click', () => {
+      state.editor.rotation = 0;
+      state.editor.flipH = false;
+      state.editor.flipV = false;
+      state.editor.aspectRatio = 'original';
+      state.editor.width = Math.min(state.originalWidth, 640);
+      dom.inputWidth.value = state.editor.width;
+      dom.valWidth.textContent = `${state.editor.width} px`;
+      dom.cropAspectGroup.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      dom.cropAspectGroup.querySelector('[data-aspect="original"]')?.classList.add('active');
+    });
+
+    // Filters
+    dom.btnFilterBw.addEventListener('click', () => {
+      state.editor.bw = !state.editor.bw;
+      dom.btnFilterBw.classList.toggle('btn-primary', state.editor.bw);
+    });
+    dom.btnFilterSepia.addEventListener('click', () => {
+      state.editor.sepia = !state.editor.sepia;
+      dom.btnFilterSepia.classList.toggle('btn-primary', state.editor.sepia);
+    });
+    dom.btnFilterInvert.addEventListener('click', () => {
+      state.editor.invert = !state.editor.invert;
+      dom.btnFilterInvert.classList.toggle('btn-primary', state.editor.invert);
+    });
+
+    dom.inputBrightness.addEventListener('input', (e) => {
+      state.editor.brightness = parseInt(e.target.value, 10);
+      dom.valBrightness.textContent = `${state.editor.brightness}%`;
+    });
+    dom.inputContrast.addEventListener('input', (e) => {
+      state.editor.contrast = parseInt(e.target.value, 10);
+      dom.valContrast.textContent = `${state.editor.contrast}%`;
+    });
+    dom.inputSaturation.addEventListener('input', (e) => {
+      state.editor.saturation = parseInt(e.target.value, 10);
+      dom.valSaturation.textContent = `${state.editor.saturation}%`;
+    });
+    dom.inputPixelate.addEventListener('input', (e) => {
+      state.editor.pixelate = parseInt(e.target.value, 10);
+      dom.valPixelate.textContent = state.editor.pixelate === 1 ? '1 (Off)' : `${state.editor.pixelate}px`;
+    });
+
+    dom.btnResetFilters.addEventListener('click', () => {
+      state.editor.bw = false;
+      state.editor.sepia = false;
+      state.editor.invert = false;
+      state.editor.brightness = 0;
+      state.editor.contrast = 0;
+      state.editor.saturation = 0;
+      state.editor.pixelate = 1;
+      dom.btnFilterBw.classList.remove('btn-primary');
+      dom.btnFilterSepia.classList.remove('btn-primary');
+      dom.btnFilterInvert.classList.remove('btn-primary');
+      dom.inputBrightness.value = 0;
+      dom.inputContrast.value = 0;
+      dom.inputSaturation.value = 0;
+      dom.inputPixelate.value = 1;
+      dom.valBrightness.textContent = '0%';
+      dom.valContrast.textContent = '0%';
+      dom.valSaturation.textContent = '0%';
+      dom.valPixelate.textContent = '1 (Off)';
+    });
+
+    // Borders & Overlays
+    dom.inputBorderWidth.addEventListener('input', (e) => {
+      state.editor.borderWidth = parseInt(e.target.value, 10);
+      dom.valBorderWidth.textContent = `${state.editor.borderWidth} px`;
+    });
+    dom.inputBorderColor.addEventListener('input', (e) => {
+      state.editor.borderColor = e.target.value;
+    });
+    dom.checkVignette.addEventListener('change', (e) => {
+      state.editor.vignette = e.target.checked;
+    });
+    dom.inputWatermark.addEventListener('input', (e) => {
+      state.editor.watermark = e.target.value;
+    });
+    dom.selectWatermarkPos.addEventListener('change', (e) => {
+      state.editor.watermarkPos = e.target.value;
+    });
+
+    // Export Trigger
+    dom.checkDithering.addEventListener('change', (e) => {
+      state.editor.dither = e.target.checked;
+    });
+    dom.btnExportGif.addEventListener('click', exportEditedWholeGif);
+    dom.btnCloseExportModal.addEventListener('click', () => {
+      dom.exportModal.style.display = 'none';
+    });
+
+    // Initial load
+    fetchGifs(true);
+
+  })();
+  </script>
+</body>
+</html>
